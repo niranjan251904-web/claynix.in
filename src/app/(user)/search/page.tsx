@@ -119,9 +119,6 @@ export default function SearchPage() {
                             <ProductGrid
                                 products={results}
                                 onQuickView={setSelectedProduct}
-                                onAddToCart={(product) => addToCart(product.id)}
-                                onToggleWishlist={(product) => toggleWishlist(product.id)}
-                                wishlistIds={wishlistIds}
                             />
                         ) : (
                             <motion.div
@@ -199,9 +196,6 @@ export default function SearchPage() {
                             <ProductGrid
                                 products={recentProducts}
                                 onQuickView={setSelectedProduct}
-                                onAddToCart={(product) => addToCart(product.id)}
-                                onToggleWishlist={(product) => toggleWishlist(product.id)}
-                                wishlistIds={wishlistIds}
                             />
                         ) : (
                             <div className="text-center py-8 text-warm-gray-500">

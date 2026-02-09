@@ -23,7 +23,7 @@ export function searchProducts(query: string): Product[] {
             (p.name.toLowerCase().includes(lowercaseQuery) ||
                 p.description.toLowerCase().includes(lowercaseQuery) ||
                 p.tags.some((tag) => tag.toLowerCase().includes(lowercaseQuery)) ||
-                p.material.toLowerCase().includes(lowercaseQuery) ||
+                (p.material && p.material.toLowerCase().includes(lowercaseQuery)) ||
                 (p.stone && p.stone.toLowerCase().includes(lowercaseQuery)))
     );
 }

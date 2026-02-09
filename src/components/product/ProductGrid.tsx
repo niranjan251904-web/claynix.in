@@ -10,9 +10,6 @@ interface ProductGridProps {
     products: Product[];
     isLoading?: boolean;
     onQuickView?: (product: Product) => void;
-    onAddToCart?: (product: Product) => void;
-    onToggleWishlist?: (product: Product) => void;
-    wishlistIds?: string[];
     columns?: 2 | 3 | 4;
     className?: string;
 }
@@ -21,9 +18,6 @@ export function ProductGrid({
     products,
     isLoading = false,
     onQuickView,
-    onAddToCart,
-    onToggleWishlist,
-    wishlistIds = [],
     columns = 4,
     className,
 }: ProductGridProps) {
@@ -64,9 +58,6 @@ export function ProductGrid({
                     key={product.id}
                     product={product}
                     onQuickView={onQuickView}
-                    onAddToCart={onAddToCart}
-                    onToggleWishlist={onToggleWishlist}
-                    isInWishlist={wishlistIds.includes(product.id)}
                 />
             ))}
         </div>

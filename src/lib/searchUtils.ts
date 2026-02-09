@@ -179,7 +179,7 @@ export function quickSearch(products: Product[], query: string, limit: number = 
     return products
         .filter(p => p.isActive && (
             p.name.toLowerCase().includes(lowercaseQuery) ||
-            p.category.toLowerCase().includes(lowercaseQuery) ||
+            (p.category && p.category.toLowerCase().includes(lowercaseQuery)) ||
             p.tags.some(t => t.toLowerCase().includes(lowercaseQuery))
         ))
         .slice(0, limit);

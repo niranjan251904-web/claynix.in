@@ -66,7 +66,7 @@ function ShopContent() {
 
         // Material filter
         if (filters.materials.length > 0) {
-            result = result.filter((p) => filters.materials.includes(p.material));
+            result = result.filter((p) => p.material && filters.materials.includes(p.material));
         }
 
         // Stone filter
@@ -177,9 +177,6 @@ function ShopContent() {
                         <ProductGrid
                             products={filteredProducts}
                             onQuickView={setSelectedProduct}
-                            onAddToCart={(product) => addToCart(product.id)}
-                            onToggleWishlist={(product) => toggleWishlist(product.id)}
-                            wishlistIds={wishlistIds}
                             columns={3}
                         />
                     </div>

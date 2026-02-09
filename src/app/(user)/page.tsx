@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import useEmblaCarousel from 'embla-carousel-react';
 import { getProducts, getFeaturedProducts, getProductsByCategory } from '@/lib/productService';
-import { getApprovedReviews, addReview, Review } from '@/lib/reviewService';
 import { CATEGORIES, TRENDS, VIRAL_FINDS, SITE_NAME, SITE_DESCRIPTION } from '@/lib/constants';
 import { formatPrice } from '@/lib/utils';
 import { ProductGrid } from '@/components/product/ProductGrid';
@@ -47,6 +46,15 @@ export default function HomePage() {
     const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
     const [newArrivals, setNewArrivals] = useState<Product[]>([]);
     const [viralFinds, setViralFinds] = useState<Product[]>([]);
+
+    // Static Review type since we removed Firebase reviews
+    type Review = {
+        id: string;
+        name: string;
+        rating: number;
+        text: string;
+        createdAt: Date;
+    };
     const [reviews, setReviews] = useState<Review[]>([]);
 
     // Review form state
@@ -63,12 +71,11 @@ export default function HomePage() {
     const { addToCart } = useCart();
     const { wishlistIds, toggleWishlist } = useWishlist();
 
-    // Fetch products and reviews from Firestore
+    // Fetch products
     const fetchData = useCallback(async () => {
         try {
-            const [allProducts, fetchedReviews, viralProducts] = await Promise.all([
+            const [allProducts, viralProducts] = await Promise.all([
                 getProducts(),
-                getApprovedReviews(6),
                 getProductsByCategory('instagram-viral')
             ]);
             // Cache all products in sessionStorage for wishlist page
@@ -80,7 +87,8 @@ export default function HomePage() {
             setNewArrivals(arrivals.length > 0 ? arrivals.slice(0, 4) : allProducts.slice(0, 4));
             // Instagram Viral Finds
             setViralFinds(viralProducts.slice(0, 4));
-            setReviews(fetchedReviews);
+            // Static reviews (no Firebase)
+            setReviews([]);
         } catch (error) {
             console.error('Error fetching data:', error);
         }
@@ -251,18 +259,12 @@ export default function HomePage() {
                                     >
                                         {/* Image Card */}
                                         <div className="relative aspect-square bg-gradient-to-br from-rose-50 to-rose-100 rounded-2xl overflow-hidden shadow-sm group-hover:shadow-lg transition-shadow duration-300">
-                                            {/* Category Image or Placeholder */}
-                                            {category.image ? (
-                                                <img
-                                                    src={category.image}
-                                                    alt={category.name}
-                                                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                                />
-                                            ) : (
-                                                <div className="absolute inset-0 flex items-center justify-center">
-                                                    <span className="text-6xl opacity-40">{category.icon}</span>
-                                                </div>
-                                            )}
+                                            {/* Category Image */}
+                                            <img
+                                                src={category.image}
+                                                alt={category.name}
+                                                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                            />
                                         </div>
 
                                         {/* Category Name - Below the card */}
@@ -456,9 +458,6 @@ export default function HomePage() {
                     <ProductGrid
                         products={featuredProducts.slice(0, 4)}
                         onQuickView={setSelectedProduct}
-                        onAddToCart={(product) => addToCart(product.id)}
-                        onToggleWishlist={(product) => toggleWishlist(product.id)}
-                        wishlistIds={wishlistIds}
                     />
 
                     <div className="mt-8 text-center md:hidden">

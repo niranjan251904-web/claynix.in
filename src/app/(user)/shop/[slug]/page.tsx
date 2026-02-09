@@ -379,9 +379,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                         </h2>
                         <ProductGrid
                             products={similarProducts}
-                            onAddToCart={(p) => addToCart(p.id)}
-                            onToggleWishlist={(p) => toggleWishlist(p.id)}
-                            wishlistIds={wishlistIds}
                             columns={4}
                         />
                     </div>
