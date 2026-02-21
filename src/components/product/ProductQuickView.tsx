@@ -5,48 +5,45 @@ import { motion } from 'framer-motion';
 import { cn, formatPrice } from '@/lib/utils';
 import { Product } from '@/lib/types';
 import { Modal, ModalBody } from '@/components/ui/Modal';
-import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import {
-    Heart,
-    ShoppingBag,
-    Minus,
-    Plus,
+    MessageCircle,
     ChevronLeft,
     ChevronRight,
-    Check
 } from 'lucide-react';
 
 interface ProductQuickViewProps {
     product: Product | null;
     isOpen: boolean;
     onClose: () => void;
-    onAddToCart?: (product: Product, variantId?: string, quantity?: number) => void;
-    onToggleWishlist?: (product: Product) => void;
-    isInWishlist?: boolean;
 }
+
+// WhatsApp number - update this with your actual WhatsApp business number
+const WHATSAPP_NUMBER = '918129628680'; // Format: country code + number without +
 
 export function ProductQuickView({
     product,
     isOpen,
     onClose,
-    onAddToCart,
-    onToggleWishlist,
-    isInWishlist = false,
 }: ProductQuickViewProps) {
-    const [selectedVariant, setSelectedVariant] = useState<string | null>(null);
-    const [quantity, setQuantity] = useState(1);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
     if (!product) return null;
 
     const hasDiscount = product.discountedPrice && product.discountedPrice < product.price;
-    const selectedVariantData = product.variants.find((v) => v.id === selectedVariant);
-    const isOutOfStock = selectedVariantData ? selectedVariantData.stock === 0 : product.stock === 0;
+    const isOutOfStock = product.stock === 0;
 
-    const handleAddToCart = () => {
-        onAddToCart?.(product, selectedVariant || undefined, quantity);
-        onClose();
+    // Handle Chat to Buy - opens WhatsApp with product details
+    const handleChatToBuy = () => {
+        const price = hasDiscount ? product.discountedPrice : product.price;
+        const message = encodeURIComponent(
+            `Hi! I'm interested in buying:\n\n` +
+            `*${product.name}*\n` +
+            `Price: ₹${price?.toFixed(2)}\n` +
+            `Product Link: ${window.location.origin}/shop/${product.slug || product.id}\n\n` +
+            `Please share more details.`
+        );
+        window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
     };
 
     const nextImage = () => {
@@ -168,78 +165,15 @@ export function ProductQuickView({
                             )}
                         </div>
 
-                        {/* Variants */}
-                        {product.variants.length > 0 && (
-                            <div className="mb-6">
-                                <label className="block text-sm font-medium text-charcoal mb-3">
-                                    {product.variants[0].size ? 'Size' : product.variants[0].color ? 'Color' : 'Option'}
-                                </label>
-                                <div className="flex flex-wrap gap-2">
-                                    {product.variants.map((variant) => (
-                                        <button
-                                            key={variant.id}
-                                            onClick={() => setSelectedVariant(variant.id)}
-                                            disabled={variant.stock === 0}
-                                            className={cn(
-                                                'px-4 py-2 border rounded-lg text-sm font-medium transition-all',
-                                                selectedVariant === variant.id
-                                                    ? 'border-gold-500 bg-gold-50 text-gold-700'
-                                                    : 'border-warm-gray-300 text-charcoal hover:border-gold-300',
-                                                variant.stock === 0 && 'opacity-50 cursor-not-allowed line-through'
-                                            )}
-                                        >
-                                            {variant.name}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Quantity */}
-                        <div className="mb-6">
-                            <label className="block text-sm font-medium text-charcoal mb-3">
-                                Quantity
-                            </label>
-                            <div className="flex items-center gap-3">
-                                <button
-                                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                    className="p-2 border border-warm-gray-300 rounded-lg hover:bg-warm-gray-50 transition-colors"
-                                    aria-label="Decrease quantity"
-                                >
-                                    <Minus size={16} />
-                                </button>
-                                <span className="w-12 text-center font-medium">{quantity}</span>
-                                <button
-                                    onClick={() => setQuantity(quantity + 1)}
-                                    className="p-2 border border-warm-gray-300 rounded-lg hover:bg-warm-gray-50 transition-colors"
-                                    aria-label="Increase quantity"
-                                >
-                                    <Plus size={16} />
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Actions */}
+                        {/* Chat to Buy Action */}
                         <div className="flex gap-3 mt-auto">
-                            <Button
-                                onClick={handleAddToCart}
-                                disabled={isOutOfStock}
-                                className="flex-1"
-                                leftIcon={<ShoppingBag size={18} />}
-                            >
-                                {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
-                            </Button>
                             <button
-                                onClick={() => onToggleWishlist?.(product)}
-                                className={cn(
-                                    'p-3 border rounded-lg transition-all',
-                                    isInWishlist
-                                        ? 'bg-rose border-rose text-white'
-                                        : 'border-warm-gray-300 text-charcoal hover:border-rose hover:text-rose'
-                                )}
-                                aria-label={isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
+                                onClick={handleChatToBuy}
+                                disabled={isOutOfStock}
+                                className="flex-1 flex items-center justify-center gap-2 py-3.5 bg-charcoal text-white text-base font-medium rounded-lg hover:bg-charcoal/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                <Heart size={20} fill={isInWishlist ? 'currentColor' : 'none'} />
+                                <MessageCircle size={20} />
+                                {isOutOfStock ? 'Out of Stock' : 'Chat to Buy'}
                             </button>
                         </div>
                     </div>

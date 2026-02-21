@@ -7,7 +7,10 @@ import { useWishlist } from '@/contexts/WishlistContext';
 import { useCart } from '@/contexts/CartContext';
 import { Product } from '@/lib/types';
 import { Button } from '@/components/ui/Button';
-import { Heart, ArrowLeft, ShoppingBag, Trash2 } from 'lucide-react';
+import { Heart, ArrowLeft, MessageCircle, Trash2 } from 'lucide-react';
+
+// WhatsApp number - update this with your actual WhatsApp business number
+const WHATSAPP_NUMBER = '918129628680'; // Format: country code + number without +
 
 export default function WishlistPage() {
     const { wishlistIds, toggleWishlist } = useWishlist();
@@ -116,11 +119,21 @@ export default function WishlistPage() {
                                 {/* Action Buttons */}
                                 <div className="flex gap-2 mt-4">
                                     <button
-                                        onClick={() => addToCart(product.id)}
+                                        onClick={() => {
+                                            const price = product.discountedPrice && product.discountedPrice < product.price ? product.discountedPrice : product.price;
+                                            const message = encodeURIComponent(
+                                                `Hi! I'm interested in buying:\n\n` +
+                                                `*${product.name}*\n` +
+                                                `Price: ₹${price?.toFixed(2)}\n` +
+                                                `Product Link: ${window.location.origin}/shop/${product.slug || product.id}\n\n` +
+                                                `Please share more details.`
+                                            );
+                                            window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
+                                        }}
                                         className="flex-1 flex items-center justify-center gap-2 py-2 bg-charcoal text-white text-sm font-medium rounded-lg hover:bg-charcoal/90 transition-colors"
                                     >
-                                        <ShoppingBag size={16} />
-                                        Add to Cart
+                                        <MessageCircle size={16} />
+                                        Chat to Buy
                                     </button>
                                     <button
                                         onClick={() => toggleWishlist(product.id)}

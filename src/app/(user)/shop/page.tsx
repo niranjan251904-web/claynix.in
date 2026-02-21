@@ -197,9 +197,6 @@ function ShopContent() {
                 product={selectedProduct}
                 isOpen={!!selectedProduct}
                 onClose={() => setSelectedProduct(null)}
-                onAddToCart={(product, variantId, quantity) => addToCart(product.id, variantId, quantity)}
-                onToggleWishlist={(product) => toggleWishlist(product.id)}
-                isInWishlist={selectedProduct ? wishlistIds.includes(selectedProduct.id) : false}
             />
         </div>
     );
